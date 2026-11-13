@@ -1,0 +1,5 @@
+import { createFileRoute } from '@tanstack/react-router';
+import { PageHeading,Empty } from '@/components/deadbyte/workspace';
+import { FileText } from 'lucide-react';
+export const Route=createFileRoute('/reports')({head:()=>({meta:[{title:'Investigation Reports — DeadByte'},{name:'description',content:'Investigator-approved evidence and findings reports.'},{property:'og:title',content:'Investigation Reports — DeadByte'},{property:'og:description',content:'Investigator-approved evidence and findings reports.'},{property:'og:type',content:'website'},{name:'twitter:card',content:'summary_large_image'}]}),component:Page});
+function Page(){return <div className="page"><PageHeading eyebrow="INVESTIGATION" title="Investigation Reports" description="Investigator-approved evidence and findings reports."/><Empty icon={FileText} title="Report generation is not enabled" description="Evidence inventories, verified findings and PDF exports are planned for Phase 5. No reports have been generated."/></div>}

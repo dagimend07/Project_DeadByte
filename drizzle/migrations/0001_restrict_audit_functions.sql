@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.record_case_activity() FROM PUBLIC, anon, authenticated; REVOKE EXECUTE ON FUNCTION public.record_evidence_activity() FROM PUBLIC, anon, authenticated;

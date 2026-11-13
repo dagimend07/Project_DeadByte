@@ -1,0 +1,5 @@
+import { createFileRoute } from '@tanstack/react-router';
+import { PageHeading,Empty } from '@/components/deadbyte/workspace';
+import { FileText } from 'lucide-react';
+export const Route=createFileRoute('/timeline')({head:()=>({meta:[{title:'Investigation Timeline — DeadByte'},{name:'description',content:'Source-referenced events from your forensic investigations.'},{property:'og:title',content:'Investigation Timeline — DeadByte'},{property:'og:description',content:'Source-referenced events from your forensic investigations.'},{property:'og:type',content:'website'},{name:'twitter:card',content:'summary_large_image'}]}),component:Page});
+function Page(){return <div className="page"><PageHeading eyebrow="INVESTIGATION" title="Investigation Timeline" description="Source-referenced events from your forensic investigations."/><Empty icon={FileText} title="Timeline events are not available yet." description="Timeline extraction and cross-source correlation are planned for Phase 5. No events have been generated."/></div>}
