@@ -5,6 +5,9 @@
 
 ---
 
+<img width="2878" height="1628" alt="image" src="https://github.com/user-attachments/assets/74ae4b9b-33aa-488b-9165-1283cd7e70a0" />
+
+
 ## 1. Problems DeadByte Solves
 
 - **Fragmented Forensic Tooling:** Investigators normally switch between separate utilities for file hashing, image metadata, Windows Registry hives, SQLite databases, and PCAP network captures. DeadByte unifies them into one case-centric workspace.
