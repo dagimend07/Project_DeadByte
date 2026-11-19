@@ -14,6 +14,7 @@ import { Route as CasesRouteImport } from './routes/cases'
 import { Route as EvidenceRouteImport } from './routes/evidence'
 import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as TeamRouteImport } from './routes/team'
 import { Route as TimelineRouteImport } from './routes/timeline'
 import { Route as ValidationRouteImport } from './routes/validation'
 import { Route as ToolsToolRouteImport } from './routes/tools/$tool'
@@ -43,6 +44,11 @@ const SettingsRoute = SettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TeamRoute = TeamRouteImport.update({
+  id: '/team',
+  path: '/team',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TimelineRoute = TimelineRouteImport.update({
   id: '/timeline',
   path: '/timeline',
@@ -65,6 +71,7 @@ export interface FileRoutesByFullPath {
   '/evidence': typeof EvidenceRoute
   '/reports': typeof ReportsRoute
   '/settings': typeof SettingsRoute
+  '/team': typeof TeamRoute
   '/timeline': typeof TimelineRoute
   '/validation': typeof ValidationRoute
   '/tools/$tool': typeof ToolsToolRoute
@@ -75,6 +82,7 @@ export interface FileRoutesByTo {
   '/evidence': typeof EvidenceRoute
   '/reports': typeof ReportsRoute
   '/settings': typeof SettingsRoute
+  '/team': typeof TeamRoute
   '/timeline': typeof TimelineRoute
   '/validation': typeof ValidationRoute
   '/tools/$tool': typeof ToolsToolRoute
@@ -86,6 +94,7 @@ export interface FileRoutesById {
   '/evidence': typeof EvidenceRoute
   '/reports': typeof ReportsRoute
   '/settings': typeof SettingsRoute
+  '/team': typeof TeamRoute
   '/timeline': typeof TimelineRoute
   '/validation': typeof ValidationRoute
   '/tools/$tool': typeof ToolsToolRoute
@@ -98,6 +107,7 @@ export interface FileRouteTypes {
     | '/evidence'
     | '/reports'
     | '/settings'
+    | '/team'
     | '/timeline'
     | '/validation'
     | '/tools/$tool'
@@ -108,6 +118,7 @@ export interface FileRouteTypes {
     | '/evidence'
     | '/reports'
     | '/settings'
+    | '/team'
     | '/timeline'
     | '/validation'
     | '/tools/$tool'
@@ -118,6 +129,7 @@ export interface FileRouteTypes {
     | '/evidence'
     | '/reports'
     | '/settings'
+    | '/team'
     | '/timeline'
     | '/validation'
     | '/tools/$tool'
@@ -129,6 +141,7 @@ export interface RootRouteChildren {
   EvidenceRoute: typeof EvidenceRoute
   ReportsRoute: typeof ReportsRoute
   SettingsRoute: typeof SettingsRoute
+  TeamRoute: typeof TeamRoute
   TimelineRoute: typeof TimelineRoute
   ValidationRoute: typeof ValidationRoute
   ToolsToolRoute: typeof ToolsToolRoute
@@ -171,6 +184,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/team': {
+      id: '/team'
+      path: '/team'
+      fullPath: '/team'
+      preLoaderRoute: typeof TeamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/timeline': {
       id: '/timeline'
       path: '/timeline'
@@ -201,6 +221,7 @@ const rootRouteChildren: RootRouteChildren = {
   EvidenceRoute: EvidenceRoute,
   ReportsRoute: ReportsRoute,
   SettingsRoute: SettingsRoute,
+  TeamRoute: TeamRoute,
   TimelineRoute: TimelineRoute,
   ValidationRoute: ValidationRoute,
   ToolsToolRoute: ToolsToolRoute,
