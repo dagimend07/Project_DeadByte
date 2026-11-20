@@ -46,19 +46,29 @@ export const Route = createFileRoute('/reports')({
 function ForensicReportsPage() {
   const { cases, evidence, activity, validations } = useWorkspace();
   const [selectedCaseId, setSelectedCaseId] = useState<string>('ALL');
-  const [examinerName, setExaminerName] = useState<string>('Dagim Endalafer');
-  const [agencyName, setAgencyName] = useState<string>('DeadByte Digital Forensics Lab · NWIT 263 (Fall 2026)');
-  const [executiveSummary, setExecutiveSummary] = useState<string>(
-    'This report documents the digital forensic acquisition, cryptographic hash verification, binary artifact extraction, and independent tool validation performed in the DeadByte Investigation Platform.'
-  );
-  const [conclusionsText, setConclusionsText] = useState<string>(
-    'All preserved evidence files were analyzed read-only in client-side memory. Findings marked VERIFIED were independently confirmed using external forensic tools as recorded in Section 4 (9-Column Validation Log).'
-  );
+  const [examinerName, setExaminerName] = useState<string>('');
+  const [agencyName, setAgencyName] = useState<string>('');
+  const [executiveSummary, setExecutiveSummary] = useState<string>('');
+  const [conclusionsText, setConclusionsText] = useState<string>('');
 
   const selectedCase = useMemo(
     () => (selectedCaseId === 'ALL' ? null : cases.find((c) => c.id === selectedCaseId) ?? null),
     [cases, selectedCaseId]
   );
+
+  const effectiveExaminer =
+    examinerName.trim() || selectedCase?.investigator || cases[0]?.investigator || 'Not Specified';
+  const effectiveAgency = agencyName.trim() || 'Not Specified';
+  const effectiveSummary =
+    executiveSummary.trim() ||
+    (selectedCase?.description
+      ? selectedCase.description
+      : 'No executive summary entered by investigator.');
+  const effectiveConclusions =
+    conclusionsText.trim() ||
+    (selectedCase?.notes
+      ? selectedCase.notes
+      : 'No forensic conclusions entered by investigator.');
 
   const reportCases = useMemo(
     () => (selectedCase ? [selectedCase] : cases),
@@ -104,13 +114,13 @@ function ForensicReportsPage() {
     const lines: string[] = [];
     lines.push(`# ${reportTitle}`);
     lines.push(`**Generated (UTC):** ${reportDateUtc}`);
-    lines.push(`**Lead Forensic Examiner:** ${examinerName}`);
-    lines.push(`**Laboratory / Course:** ${agencyName}`);
+    lines.push(`**Lead Forensic Examiner:** ${effectiveExaminer}`);
+    lines.push(`**Laboratory / Organization:** ${effectiveAgency}`);
     lines.push('');
     lines.push('---');
     lines.push('');
     lines.push('## 1. Executive Summary');
-    lines.push(executiveSummary);
+    lines.push(effectiveSummary);
     lines.push('');
     lines.push('### Investigation Metrics');
     lines.push(`- **Cases Covered:** ${reportCases.length}`);
@@ -129,7 +139,7 @@ function ForensicReportsPage() {
       for (const c of reportCases) {
         lines.push(`### ${c.name} (\`${c.case_number}\`)`);
         lines.push(`- **Status:** ${c.status}`);
-        lines.push(`- **Investigator:** ${c.investigator || examinerName}`);
+        lines.push(`- **Investigator:** ${c.investigator || effectiveExaminer}`);
         lines.push(`- **Created (UTC):** ${c.created_at}`);
         lines.push(`- **Description:** ${c.description || 'Not Present'}`);
         lines.push(`- **Investigator Notes:** ${c.notes || 'Not Present'}`);
@@ -183,7 +193,7 @@ function ForensicReportsPage() {
     lines.push('---');
     lines.push('');
     lines.push('## 6. Forensic Conclusions & Verification Attestation');
-    lines.push(conclusionsText);
+    lines.push(effectiveConclusions);
     lines.push('');
     return lines.join('\n');
   }
@@ -227,11 +237,11 @@ function ForensicReportsPage() {
   <h1>${reportTitle}</h1>
   <div class="meta">
     <div><strong>Generated (UTC):</strong> ${reportDateUtc}</div>
-    <div><strong>Lead Forensic Examiner:</strong> ${examinerName}</div>
-    <div><strong>Laboratory / Course:</strong> ${agencyName}</div>
+    <div><strong>Lead Forensic Examiner:</strong> ${effectiveExaminer}</div>
+    <div><strong>Laboratory / Organization:</strong> ${effectiveAgency}</div>
   </div>
   <h2>1. Executive Summary</h2>
-  <p>${executiveSummary}</p>
+  <p>${effectiveSummary}</p>
   <h2>2. Preserved Evidence Locker Inventory (${reportEvidence.length})</h2>
   <table>
     <thead>
@@ -276,7 +286,7 @@ function ForensicReportsPage() {
     </tbody>
   </table>
   <h2>4. Forensic Conclusions & Verification Attestation</h2>
-  <p>${conclusionsText}</p>
+  <p>${effectiveConclusions}</p>
 </body>
 </html>`;
 
@@ -295,6 +305,8 @@ function ForensicReportsPage() {
     toast.success('Copied full Markdown forensic report to clipboard.');
   }
 
+  const hasAnyWorkspaceData = cases.length > 0 || evidence.length > 0 || validations.length > 0;
+
   return (
     <div className="page">
       <PageHeading
@@ -302,20 +314,44 @@ function ForensicReportsPage() {
         title="Investigation Reports"
         description="Generate court-style forensic investigation reports with chain of custody, SHA-256 evidence inventories, and your 9-Column Independent Validation Log."
       >
-        <Button type="button" variant="outline" size="sm" onClick={copyMarkdown}>
-          <Copy size={14} /> Copy Markdown
-        </Button>
-        <Button type="button" variant="outline" size="sm" onClick={downloadMarkdown}>
-          <Download size={14} /> Export .MD
-        </Button>
-        <Button type="button" variant="outline" size="sm" onClick={downloadHtmlReport}>
-          <FileText size={14} /> Export .HTML
-        </Button>
-        <Button type="button" variant="default" size="sm" onClick={() => window.print()}>
-          <Printer size={14} /> Print / Save as PDF
-        </Button>
+        {hasAnyWorkspaceData && (
+          <>
+            <Button type="button" variant="outline" size="sm" onClick={copyMarkdown}>
+              <Copy size={14} /> Copy Markdown
+            </Button>
+            <Button type="button" variant="outline" size="sm" onClick={downloadMarkdown}>
+              <Download size={14} /> Export .MD
+            </Button>
+            <Button type="button" variant="outline" size="sm" onClick={downloadHtmlReport}>
+              <FileText size={14} /> Export .HTML
+            </Button>
+            <Button type="button" variant="default" size="sm" onClick={() => window.print()}>
+              <Printer size={14} /> Print / Save as PDF
+            </Button>
+          </>
+        )}
       </PageHeading>
 
+      {!hasAnyWorkspaceData ? (
+        <Empty
+          icon={FileText}
+          title="No cases or evidence to report on yet"
+          description="Create an investigation case and upload evidence in your workspace first. Once you add your own case data, you can generate, customize, and export your forensic report here."
+        >
+          <div style={{ display: 'flex', gap: 10 }}>
+            <Button asChild variant="default" size="sm">
+              <Link to="/cases">
+                Open Case Manager <ArrowUpRight size={14} />
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link to="/evidence">
+                Open Evidence Locker <ArrowUpRight size={14} />
+              </Link>
+            </Button>
+          </div>
+        </Empty>
+      ) : (
       <div className="hash-analyzer">
         {/* Report Configuration Controls */}
         <section className="analyzer-card">
@@ -345,16 +381,18 @@ function ForensicReportsPage() {
                 type="text"
                 value={examinerName}
                 onChange={(e) => setExaminerName(e.target.value)}
+                placeholder={selectedCase?.investigator || cases[0]?.investigator || 'Enter your name…'}
               />
             </label>
           </div>
 
           <label className="field-label">
-            Forensic Laboratory / Course Affiliation
+            Forensic Laboratory / Organization
             <input
               type="text"
               value={agencyName}
               onChange={(e) => setAgencyName(e.target.value)}
+              placeholder="Enter your lab, organization, or course name…"
             />
           </label>
 
@@ -364,6 +402,7 @@ function ForensicReportsPage() {
               <textarea
                 value={executiveSummary}
                 onChange={(e) => setExecutiveSummary(e.target.value)}
+                placeholder="Summarize the scope and background of your investigation…"
               />
             </label>
             <label className="field-label">
@@ -371,6 +410,7 @@ function ForensicReportsPage() {
               <textarea
                 value={conclusionsText}
                 onChange={(e) => setConclusionsText(e.target.value)}
+                placeholder="Enter your verified forensic findings and conclusions…"
               />
             </label>
           </div>
@@ -424,11 +464,11 @@ function ForensicReportsPage() {
           <div className="exif-fields-grid">
             <div className="exif-field-row">
               <span className="exif-label">Lead Examiner</span>
-              <strong>{examinerName}</strong>
+              <strong>{effectiveExaminer}</strong>
             </div>
             <div className="exif-field-row">
-              <span className="exif-label">Laboratory / Course</span>
-              <span>{agencyName}</span>
+              <span className="exif-label">Laboratory / Organization</span>
+              <span>{effectiveAgency}</span>
             </div>
             <div className="exif-field-row">
               <span className="exif-label">Cases Included</span>
@@ -445,7 +485,7 @@ function ForensicReportsPage() {
           {/* Section 1: Executive Summary */}
           <div className="verify-box">
             <div className="detail-label">SECTION 1 · EXECUTIVE SUMMARY</div>
-            <p style={{ fontSize: '12px', lineHeight: 1.65 }}>{executiveSummary}</p>
+            <p style={{ fontSize: '12px', lineHeight: 1.65 }}>{effectiveSummary}</p>
           </div>
 
           {/* Section 2: Preserved Evidence Inventory */}
@@ -618,10 +658,11 @@ function ForensicReportsPage() {
           {/* Section 5: Examiner Conclusions & Attestation */}
           <div className="verify-box">
             <div className="detail-label">SECTION 5 · FORENSIC CONCLUSIONS & EXAMINER ATTESTATION</div>
-            <p style={{ fontSize: '12px', lineHeight: 1.65 }}>{conclusionsText}</p>
+            <p style={{ fontSize: '12px', lineHeight: 1.65 }}>{effectiveConclusions}</p>
           </div>
         </section>
       </div>
+      )}
     </div>
   );
 }
