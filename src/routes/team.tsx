@@ -55,7 +55,8 @@ const TEAM_MEMBERS: TeamMember[] = [
   {
     initials: 'DH',
     name: 'Dellina Hintsa Asmelash',
-    bio: 'Team member on the DeadByte project.',
+    bio: 'Team member on the DeadByte project.'
+    linkedin: 'https://www.linkedin.com/in/dellina-asmelash-bb1578384',
   },
 ];
 
